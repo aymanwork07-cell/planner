@@ -449,7 +449,7 @@ const LITS=[{id:'hizb',n:'Ḥizb al-Baḥr',s:'Imām al-Shādhilī'}].concat(
   [{id:'benefit',k:'benefit',n:'Benefit of Ṣalawāt',s:'Dalā’il',short:'Benefit',title:'The Benefit of Requesting Blessings upon the Prophet ﷺ'},
    {id:'names',k:'names',n:'201 Names',s:'Of the Prophet ﷺ',short:'Names',title:'Names of our Master and Prophet, Muḥammad ﷺ'},
    {id:'qasidah',n:'Qaṣīdahs',s:'Audio',short:'Qaṣīdahs'}]);
-const QASIDAHS=[];
+const QASIDAHS=[{"t": "Ishrab Sharab Ahl al-Safa", "a": "Vol 1 · On the Shore · p90", "f": "qasidah/ishrab-sharab.m4a", "d": 168}, {"t": "Rawhun Wa Rayhan", "a": "Vol 1 · On the Shore · p42", "f": "qasidah/rawhun-wa-rayhan.m4a", "d": 249}, {"t": "Rawhun Wa Rayhan", "a": "Vol 3 · Marvels of the Deep · p42 · Lazimah 2 (Bayat)", "f": "qasidah/rawhun-wa-rayhan-l2.m4a", "d": 282}, {"t": "Qad Kafani Ilm Rabbi", "a": "Vol 1 · On the Shore · p49", "f": "qasidah/qad-kafani.m4a", "d": 435}, {"t": "Talaa al-Badru Alayna", "a": "Vol 1 · On the Shore · p203", "f": "qasidah/talaa-al-badru.m4a", "d": 499}, {"t": "Talama Ashku Gharami", "a": "Vol 1 · On the Shore · p267", "f": "qasidah/talama-ashku.m4a", "d": 521}, {"t": "Ya Rijalan Ghabu", "a": "Vol 1 · On the Shore · p270", "f": "qasidah/ya-rijalan-ghabu.m4a", "d": 342}, {"t": "Aya Murid Allah", "a": "Vol 2 · Wading the Sea · p90", "f": "qasidah/aya-murid-allah.m4a", "d": 325}, {"t": "Aya Murid Allah", "a": "Vol 3 · Marvels of the Deep · p90 · Lazimah 2 (Bayat)", "f": "qasidah/aya-murid-allah-l2.m4a", "d": 200}, {"t": "Aya Murid Allah Nuid Lak Qawli Isghah", "a": "Vol 3 · Marvels of the Deep · p92 · Lazimah 2 (Bayat)", "f": "qasidah/aya-murid-nuid.m4a", "d": 270}, {"t": "Nasamat Hawaka Laha Araju", "a": "Vol 3 · Marvels of the Deep · p172 · Lazimah 2 (Ajam)", "f": "qasidah/nasamat-hawaka.m4a", "d": 208}];
 const DALAIL_PAGES={"1": 11, "2": 8, "3": 10, "4": 8, "5": 10, "6": 9, "7": 7, "8": 9, "benefit": 6, "names": 6};
 function renderLitGrid(){const td=new Date().getDay();
   $('#litGrid').innerHTML=LITS.map(l=>`<button class="lit ${l.day===td?'today':''}" data-l="${l.id}">${l.n}<small>${l.s}</small></button>`).join('');
@@ -464,7 +464,7 @@ function openLit(id){
       [1,2,3,4,5,6,7,8].map(i=>`<img src="hizb/${i}.webp" alt="Ḥizb al-Baḥr page ${i}" loading="${i<3?'eager':'lazy'}">`).join('');
   }else if(id==='qasidah'){
     h='<h3>Qaṣīdahs</h3><p class="by">Poems in praise of the Prophet ﷺ</p>'+(QASIDAHS.length?QASIDAHS.map(q=>
-      `<div class="card" style="margin-bottom:12px;padding:16px"><div style="font-weight:500">${esc(q.t)}</div>${q.a?`<div class="note" style="margin-top:2px">${esc(q.a)}</div>`:''}<audio controls preload="none" src="${esc(q.f)}"></audio></div>`).join('')
+      `<div class="card" style="margin-bottom:12px;padding:16px"><div style="display:flex;justify-content:space-between;gap:10px"><span style="font-weight:500">${esc(q.t)}</span>${q.d?`<span class="mono note" style="margin:0">${Math.floor(q.d/60)}:${pad(q.d%60)}</span>`:''}</div>${q.a?`<div class="note" style="margin-top:2px">${esc(q.a)}</div>`:''}<audio controls preload="none" src="${esc(q.f)}" style="margin:10px 0 0"></audio></div>`).join('')
       :'<p class="note">No qaṣīdahs added yet.</p>');
   }else if(!l.day&&l.day!==0){
     const pages=DALAIL_PAGES[l.k]||0;
@@ -485,6 +485,7 @@ function closeLit(){$('#reader').classList.remove('open');document.body.style.ov
 $('#litGrid').onclick=e=>{const b=e.target.closest('[data-l]');if(b)openLit(b.dataset.l)};
 $('#rdTabs').onclick=e=>{if(e.target.closest('#rdClose'))return closeLit();const b=e.target.closest('[data-l]');if(b)openLit(b.dataset.l)};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLit()});
+document.addEventListener('play',e=>{document.querySelectorAll('audio').forEach(a=>{if(a!==e.target)a.pause()})},true);
 renderLitGrid();
 if(location.hash&&LITS.some(l=>'#'+l.id===location.hash))openLit(location.hash.slice(1));
 setDates();renderPrayers();renderTasks();renderLinks();notifState();tick();checkReminders(new Date());
