@@ -1,0 +1,23 @@
+name: Update KCL ISOC prayer times
+on:
+  schedule:
+    - cron: '17 4 * * *'   # every day around 4am UK
+  workflow_dispatch:
+  push:
+    paths: ['scripts/update-isoc.mjs', '.github/workflows/update-isoc.yml']
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: node scripts/update-isoc.mjs
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git add isoc.json
+          git diff --cached --quiet || (git commit -m "Update KCL ISOC times" && git push)
