@@ -445,8 +445,12 @@ const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturda
 const LITS=[{id:'hizb',n:'Ḥizb al-Baḥr',s:'Imām al-Shādhilī'}].concat(
   [[1,1,'Monday','Dalā’il · first'],[2,2,'Tuesday','Dalā’il'],[3,3,'Wednesday','Dalā’il'],[4,4,'Thursday','Dalā’il'],
    [5,5,'Friday','Dalā’il'],[6,6,'Saturday','Dalā’il'],[7,0,'Sunday','Dalā’il'],[8,1,'Monday','Dalā’il · last']]
-  .map(([k,d,n,s])=>({id:'p'+k,k,n,s,day:d,short:k===1?'Mon I':k===8?'Mon II':n.slice(0,3)})));
-const DALAIL_PAGES={};
+  .map(([k,d,n,s])=>({id:'p'+k,k,n,s,day:d,short:k===1?'Mon I':k===8?'Mon II':n.slice(0,3)})),
+  [{id:'benefit',k:'benefit',n:'Benefit of Ṣalawāt',s:'Dalā’il',short:'Benefit',title:'The Benefit of Requesting Blessings upon the Prophet ﷺ'},
+   {id:'names',k:'names',n:'201 Names',s:'Of the Prophet ﷺ',short:'Names',title:'Names of our Master and Prophet, Muḥammad ﷺ'},
+   {id:'qasidah',n:'Qaṣīdahs',s:'Audio',short:'Qaṣīdahs'}]);
+const QASIDAHS=[];
+const DALAIL_PAGES={"1": 11, "2": 8, "3": 10, "4": 8, "5": 10, "6": 9, "7": 7, "8": 9, "benefit": 6, "names": 6};
 function renderLitGrid(){const td=new Date().getDay();
   $('#litGrid').innerHTML=LITS.map(l=>`<button class="lit ${l.day===td?'today':''}" data-l="${l.id}">${l.n}<small>${l.s}</small></button>`).join('');
   $('#rdTabs').innerHTML=LITS.map(l=>`<button class="ghost" data-l="${l.id}">${l.short||l.n}</button>`).join('')+'<button class="rd-close" id="rdClose" aria-label="Close">×</button>';
@@ -458,6 +462,14 @@ function openLit(id){
   if(id==='hizb'){
     h='<h3>Ḥizb al-Baḥr</h3><p class="by">The Litany of the Sea · Imām Abū al-Ḥasan al-Shādhilī</p>'+
       [1,2,3,4,5,6,7,8].map(i=>`<img src="hizb/${i}.webp" alt="Ḥizb al-Baḥr page ${i}" loading="${i<3?'eager':'lazy'}">`).join('');
+  }else if(id==='qasidah'){
+    h='<h3>Qaṣīdahs</h3><p class="by">Poems in praise of the Prophet ﷺ</p>'+(QASIDAHS.length?QASIDAHS.map(q=>
+      `<div class="card" style="margin-bottom:12px;padding:16px"><div style="font-weight:500">${esc(q.t)}</div>${q.a?`<div class="note" style="margin-top:2px">${esc(q.a)}</div>`:''}<audio controls preload="none" src="${esc(q.f)}"></audio></div>`).join('')
+      :'<p class="note">No qaṣīdahs added yet.</p>');
+  }else if(!l.day&&l.day!==0){
+    const pages=DALAIL_PAGES[l.k]||0;
+    h=`<h3>${l.title}</h3><p class="by">Dalā’il al-Khayrāt · Imām Muḥammad al-Jazūlī</p>`+
+      Array.from({length:pages},(_,i)=>`<img src="dalail/${l.k}/${i+1}.webp" alt="${l.n} page ${i+1}" loading="${i<2?'eager':'lazy'}">`).join('');
   }else{
     const pages=DALAIL_PAGES[l.k]||0,part=l.k===1?' (first portion)':l.k===8?' (last portion)':'';
     h=`<h3>Dalā’il al-Khayrāt · ${l.n}${part}</h3><p class="by">Imām Muḥammad al-Jazūlī</p>`+
